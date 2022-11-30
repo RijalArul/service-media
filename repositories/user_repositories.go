@@ -9,6 +9,8 @@ import (
 type UserRepository interface {
 	Create(user models.User) (models.User, error)
 	FindByEmail(email string) (models.User, error)
+	FindByID(id uint) (models.User, error)
+	UpdateByID(user models.User, userID uint) (models.User, error)
 }
 
 type UserRepositoryImpl struct {
@@ -28,5 +30,18 @@ func (r *UserRepositoryImpl) FindByEmail(email string) (models.User, error) {
 	user := models.User{}
 	err := r.DB.Model(&user).Where("email = ?", email).First(&user).Error
 
+	return user, err
+}
+
+func (r *UserRepositoryImpl) FindByID(id uint) (models.User, error) {
+	user := models.User{}
+	err := r.DB.Model(&user).Where("id = ?", id).First(&user).Error
+
+	return user, err
+}
+
+func (r *UserRepositoryImpl) UpdateByID(user models.User, userID uint) (models.User, error) {
+
+	err := r.DB.Model(&user).Where("id = ?", userID).Updates(&user).First(&user).Error
 	return user, err
 }

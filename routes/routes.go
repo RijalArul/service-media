@@ -3,6 +3,7 @@ package routes
 import (
 	"service-media/databases"
 	"service-media/handlers"
+	"service-media/middlewares"
 	"service-media/repositories"
 	"service-media/services"
 
@@ -20,6 +21,9 @@ func Routes() {
 	{
 		userRouter.POST("/register", userHandler.Register)
 		userRouter.POST("/login", userHandler.Login)
+		userRouter.Use(middlewares.Authenthication())
+		userRouter.GET("/", userHandler.GetUser)
+		userRouter.PUT("/", userHandler.UpdateUser)
 	}
 
 	r.Run()
