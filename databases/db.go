@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	models "service-media/models/entity"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -37,6 +39,8 @@ func StartDB() {
 	if err != nil {
 		panic(err)
 	}
+
+	DB.AutoMigrate(models.User{})
 
 }
 

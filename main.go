@@ -1,25 +1,13 @@
 package main
 
 import (
-	"log"
-	"os"
 	"service-media/databases"
 
-	"github.com/joho/godotenv"
+	"github.com/gin-gonic/gin"
 )
 
-func goDotEnvVariable(key string) string {
-
-	// load .env file
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Fatalf("Error loading .env file")
-	}
-
-	return os.Getenv(key)
-}
-
 func main() {
+	r := gin.Default()
 	databases.StartDB()
+	r.Run()
 }
