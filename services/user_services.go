@@ -8,6 +8,7 @@ import (
 
 type UserService interface {
 	Create(UserInput web.CreateUserRequest) (models.User, error)
+	Login(LoginInput web.LoginUserRequest) (models.User, error)
 }
 
 type UserServiceImpl struct {
@@ -28,4 +29,9 @@ func (s *UserServiceImpl) Create(UserInput web.CreateUserRequest) (models.User, 
 
 	newUser, err := s.UserRepository.Create(user)
 	return newUser, err
+}
+
+func (s *UserServiceImpl) Login(LoginInput web.LoginUserRequest) (models.User, error) {
+	user, err := s.UserRepository.FindByEmail(LoginInput.Email)
+	return user, err
 }
