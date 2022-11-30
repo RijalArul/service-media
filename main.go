@@ -2,12 +2,10 @@ package main
 
 import (
 	"service-media/databases"
-
-	"github.com/gin-gonic/gin"
+	"service-media/routes"
 )
 
 func main() {
-	r := gin.Default()
 	databases.StartDB()
-	r.Run()
+	routes.Routes()
 }
