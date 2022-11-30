@@ -24,6 +24,7 @@ func Routes() {
 		userRouter.Use(middlewares.Authenthication())
 		userRouter.GET("/", userHandler.GetUser)
 		userRouter.PUT("/", userHandler.UpdateUser)
+		userRouter.DELETE("/", userHandler.DeleteUser)
 	}
 
 	r.Run()

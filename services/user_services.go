@@ -11,6 +11,7 @@ type UserService interface {
 	Login(LoginInput web.LoginUserRequest) (models.User, error)
 	GetUser(id uint) (web.CreateUserResponse, error)
 	UpdateUser(UpdateInput web.UpdateUserRequest, userID uint) (web.UpdateUserResponse, error)
+	Delete(userID uint) error
 }
 
 type UserServiceImpl struct {
@@ -86,4 +87,9 @@ func (s *UserServiceImpl) UpdateUser(UpdateInput web.UpdateUserRequest, userID u
 		UpdatedAt: *updateUser.UpdatedAt,
 	}
 	return userResp, err
+}
+
+func (s *UserServiceImpl) Delete(userID uint) error {
+	err := s.UserRepository.Delete(userID)
+	return err
 }

@@ -16,6 +16,7 @@ type UserHandler interface {
 	Login(ctx *gin.Context)
 	GetUser(ctx *gin.Context)
 	UpdateUser(ctx *gin.Context)
+	DeleteUser(ctx *gin.Context)
 }
 
 type UserHandlerImpl struct {
@@ -164,4 +165,18 @@ func (h *UserHandlerImpl) UpdateUser(ctx *gin.Context) {
 
 	updateResp := &updateUser
 	convertReturnUserResponse(ctx, http.StatusOK, "Updated User", updateResp)
+}
+
+func (h *UserHandlerImpl) DeleteUser(ctx *gin.Context) {
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	userID := uint(userData["id"].(float64))
+	_, err := h.UserService.GetUser(userID)
+	err = h.UserService.Delete(userID)
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "User Not Found", err.Error())
+	}
+
+	convertReturnUserResponse(ctx, http.StatusAccepted, "User has ben deleted", "User has ben deleted")
+
 }
