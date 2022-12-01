@@ -5,6 +5,7 @@ import (
 	"service-media/helpers"
 	"service-media/models/web"
 	"service-media/services"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ type PhotoHandler interface {
 	Create(ctx *gin.Context)
 	GetAllPhotos(ctx *gin.Context)
 	GetPhotosByUser(ctx *gin.Context)
+	UpdatePhoto(ctx *gin.Context)
 }
 
 type PhotoHandlerImpl struct {
@@ -42,7 +44,7 @@ func convertBodyStatusResponse(ctx *gin.Context, code int, message string, data 
 }
 
 func (h *PhotoHandlerImpl) Create(ctx *gin.Context) {
-	var PhotoInput web.CreaatePhotoRequest
+	var PhotoInput web.PhotoRequest
 	userData := ctx.MustGet("userData").(jwt.MapClaims)
 	contentType := helpers.GetContentType(ctx)
 	userID := uint(userData["id"].(float64))
@@ -82,4 +84,31 @@ func (h *PhotoHandlerImpl) GetPhotosByUser(ctx *gin.Context) {
 	}
 
 	convertBodyStatusResponse(ctx, http.StatusOK, "Success found photos user", photos)
+}
+
+func (h *PhotoHandlerImpl) UpdatePhoto(ctx *gin.Context) {
+	var photoInput web.PhotoRequest
+
+	contentType := helpers.GetContentType(ctx)
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&photoInput)
+	} else {
+		ctx.ShouldBind(&photoInput)
+	}
+	photoId := ctx.Param("photoId")
+	parsePhotoID, _ := strconv.ParseUint(photoId, 10, 32)
+	photo, err := h.PhotoService.UpdatePhoto(photoInput, uint(parsePhotoID))
+
+	// if contentType == appJSON {
+	// 	ctx.ShouldBindJSON(photoInput)
+	// } else {
+	// 	ctx.ShouldBind(photoInput)
+	// }
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Failed Update Photo", err.Error())
+		return
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusOK, "Success Updated Photo", photo)
 }

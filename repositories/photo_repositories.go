@@ -10,6 +10,8 @@ type PhotoRepository interface {
 	Create(photo models.Photo) (models.Photo, error)
 	FindAll() ([]models.Photo, error)
 	FindPhotosByUser(userId uint) ([]models.Photo, error)
+	FindPhotoById(id uint) (models.Photo, error)
+	UpdatePhoto(photo models.Photo, photoId uint) (models.Photo, error)
 }
 
 type PhotoRepositoryImpl struct {
@@ -40,4 +42,15 @@ func (r *PhotoRepositoryImpl) FindPhotosByUser(userId uint) ([]models.Photo, err
 	err := r.DB.Find(&Photos, "user_id = ?", userId).Error
 
 	return Photos, err
+}
+
+func (r *PhotoRepositoryImpl) FindPhotoById(id uint) (models.Photo, error) {
+	photo := models.Photo{}
+	err := r.DB.Model(&photo).First(&photo, id).Error
+	return photo, err
+}
+
+func (r *PhotoRepositoryImpl) UpdatePhoto(photo models.Photo, photoId uint) (models.Photo, error) {
+	err := r.DB.Model(&photo).Where("id = ?", photoId).Updates(&photo).First(&photo).Error
+	return photo, err
 }

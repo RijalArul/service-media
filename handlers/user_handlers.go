@@ -161,6 +161,7 @@ func (h *UserHandlerImpl) UpdateUser(ctx *gin.Context) {
 
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "User Failed Update", err.Error())
+		return
 	}
 
 	updateResp := &updateUser
@@ -175,6 +176,7 @@ func (h *UserHandlerImpl) DeleteUser(ctx *gin.Context) {
 
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "User Not Found", err.Error())
+		return
 	}
 
 	convertReturnUserResponse(ctx, http.StatusAccepted, "User has ben deleted", "User has ben deleted")

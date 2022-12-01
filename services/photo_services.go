@@ -7,9 +7,10 @@ import (
 )
 
 type PhotoService interface {
-	Create(PhotoInput web.CreaatePhotoRequest, userId uint) (web.CreatePhotoResponse, error)
+	Create(photoInput web.PhotoRequest, userId uint) (web.CreatePhotoResponse, error)
 	GetAllPhotos() ([]web.CreatePhotoResponse, error)
 	GetPhotosByUser(userId uint) ([]web.CreatePhotoResponse, error)
+	UpdatePhoto(photoInput web.PhotoRequest, photoId uint) (web.UpdatePhotoResponse, error)
 }
 
 type PhotoServiceImpl struct {
@@ -31,11 +32,21 @@ func convertBodyPhotoResponse(photo models.Photo) web.CreatePhotoResponse {
 	}
 }
 
-func (s *PhotoServiceImpl) Create(PhotoInput web.CreaatePhotoRequest, userId uint) (web.CreatePhotoResponse, error) {
+func convertBodyUpdatePhotoResponse(photo models.Photo) web.UpdatePhotoResponse {
+	return web.UpdatePhotoResponse{
+		Id:       photo.ID,
+		Title:    photo.Title,
+		Caption:  photo.Caption,
+		PhotoUrl: photo.PhotoUrl,
+		UserID:   photo.UserID,
+	}
+}
+
+func (s *PhotoServiceImpl) Create(photoInput web.PhotoRequest, userId uint) (web.CreatePhotoResponse, error) {
 	photo := models.Photo{
-		Title:    PhotoInput.Title,
-		Caption:  PhotoInput.Caption,
-		PhotoUrl: PhotoInput.PhotoUrl,
+		Title:    photoInput.Title,
+		Caption:  photoInput.Caption,
+		PhotoUrl: photoInput.PhotoUrl,
 		UserID:   userId,
 	}
 	newPhoto, err := s.PhotoRepository.Create(photo)
@@ -63,4 +74,15 @@ func (s *PhotoServiceImpl) GetPhotosByUser(userId uint) ([]web.CreatePhotoRespon
 	}
 
 	return photoResp, err
+}
+
+func (s *PhotoServiceImpl) UpdatePhoto(photoInput web.PhotoRequest, photoId uint) (web.UpdatePhotoResponse, error) {
+	photo := models.Photo{
+		Title:    photoInput.Title,
+		Caption:  photoInput.Caption,
+		PhotoUrl: photoInput.PhotoUrl,
+	}
+
+	updatePhoto, err := s.PhotoRepository.UpdatePhoto(photo, photoId)
+	return convertBodyUpdatePhotoResponse(updatePhoto), err
 }

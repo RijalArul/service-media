@@ -37,6 +37,7 @@ func Routes() {
 		photoRouter.POST("/", photoHandler.Create)
 		photoRouter.GET("/", photoHandler.GetAllPhotos)
 		photoRouter.GET("/user", photoHandler.GetPhotosByUser)
+		photoRouter.PUT("/:photoId", middlewares.PhotoAuthorization(), photoHandler.UpdatePhoto)
 	}
 
 	r.Run()
