@@ -27,5 +27,14 @@ func Routes() {
 		userRouter.DELETE("/", userHandler.DeleteUser)
 	}
 
+	photoRepository := repositories.NewPhotoRepository(db)
+	photoService := services.NewPhotoService(&photoRepository)
+	photoHandler := handlers.NewPhotoHandler(photoService)
+	photoRouter := r.Group("/photos")
+
+	{
+		photoRouter.POST("/", middlewares.Authenthication(), photoHandler.Create)
+	}
+
 	r.Run()
 }
