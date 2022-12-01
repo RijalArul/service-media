@@ -11,6 +11,7 @@ type PhotoService interface {
 	GetAllPhotos() ([]web.CreatePhotoResponse, error)
 	GetPhotosByUser(userId uint) ([]web.CreatePhotoResponse, error)
 	UpdatePhoto(photoInput web.PhotoRequest, photoId uint) (web.UpdatePhotoResponse, error)
+	DeletePhoto(photoId uint) error
 }
 
 type PhotoServiceImpl struct {
@@ -85,4 +86,9 @@ func (s *PhotoServiceImpl) UpdatePhoto(photoInput web.PhotoRequest, photoId uint
 
 	updatePhoto, err := s.PhotoRepository.UpdatePhoto(photo, photoId)
 	return convertBodyUpdatePhotoResponse(updatePhoto), err
+}
+
+func (s *PhotoServiceImpl) DeletePhoto(photoId uint) error {
+	err := s.PhotoRepository.DeletePhoto(photoId)
+	return err
 }

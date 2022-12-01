@@ -16,6 +16,7 @@ type PhotoHandler interface {
 	GetAllPhotos(ctx *gin.Context)
 	GetPhotosByUser(ctx *gin.Context)
 	UpdatePhoto(ctx *gin.Context)
+	DeletePhoto(ctx *gin.Context)
 }
 
 type PhotoHandlerImpl struct {
@@ -39,7 +40,9 @@ func convertBodyStatusResponse(ctx *gin.Context, code int, message string, data 
 			"photos":  data,
 		})
 	default:
-		ctx.JSON(code, message)
+		ctx.JSON(code, gin.H{
+			"message": message,
+		})
 	}
 }
 
@@ -99,16 +102,22 @@ func (h *PhotoHandlerImpl) UpdatePhoto(ctx *gin.Context) {
 	parsePhotoID, _ := strconv.ParseUint(photoId, 10, 32)
 	photo, err := h.PhotoService.UpdatePhoto(photoInput, uint(parsePhotoID))
 
-	// if contentType == appJSON {
-	// 	ctx.ShouldBindJSON(photoInput)
-	// } else {
-	// 	ctx.ShouldBind(photoInput)
-	// }
-
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Failed Update Photo", err.Error())
 		return
 	}
 
 	convertBodyStatusResponse(ctx, http.StatusOK, "Success Updated Photo", photo)
+}
+
+func (h *PhotoHandlerImpl) DeletePhoto(ctx *gin.Context) {
+	photoId := ctx.Param("photoId")
+	parsePhotoID, _ := strconv.ParseUint(photoId, 10, 32)
+	err := h.PhotoService.DeletePhoto(uint(parsePhotoID))
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "Failed Delete Photo", err.Error())
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusAccepted, "Success Deleted Photo", "Success Deleted Photo")
 }

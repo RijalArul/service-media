@@ -38,6 +38,7 @@ func Routes() {
 		photoRouter.GET("/", photoHandler.GetAllPhotos)
 		photoRouter.GET("/user", photoHandler.GetPhotosByUser)
 		photoRouter.PUT("/:photoId", middlewares.PhotoAuthorization(), photoHandler.UpdatePhoto)
+		photoRouter.DELETE("/:photoId", middlewares.PhotoAuthorization(), photoHandler.DeletePhoto)
 	}
 
 	r.Run()

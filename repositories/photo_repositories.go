@@ -12,6 +12,7 @@ type PhotoRepository interface {
 	FindPhotosByUser(userId uint) ([]models.Photo, error)
 	FindPhotoById(id uint) (models.Photo, error)
 	UpdatePhoto(photo models.Photo, photoId uint) (models.Photo, error)
+	DeletePhoto(photoId uint) error
 }
 
 type PhotoRepositoryImpl struct {
@@ -53,4 +54,11 @@ func (r *PhotoRepositoryImpl) FindPhotoById(id uint) (models.Photo, error) {
 func (r *PhotoRepositoryImpl) UpdatePhoto(photo models.Photo, photoId uint) (models.Photo, error) {
 	err := r.DB.Model(&photo).Where("id = ?", photoId).Updates(&photo).First(&photo).Error
 	return photo, err
+}
+
+func (r *PhotoRepositoryImpl) DeletePhoto(photoId uint) error {
+	photo := models.Photo{}
+	err := r.DB.Model(&photo).Delete(&photo, photoId).Error
+
+	return err
 }
