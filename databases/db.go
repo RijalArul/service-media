@@ -40,7 +40,7 @@ func StartDB() {
 		panic(err)
 	}
 
-	DB.AutoMigrate(models.User{})
+	DB.AutoMigrate(models.User{}, models.Photo{})
 
 }
 
