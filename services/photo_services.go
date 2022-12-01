@@ -9,6 +9,7 @@ import (
 type PhotoService interface {
 	Create(PhotoInput web.CreaatePhotoRequest, userId uint) (web.CreatePhotoResponse, error)
 	GetAllPhotos() ([]web.CreatePhotoResponse, error)
+	GetPhotosByUser(userId uint) ([]web.CreatePhotoResponse, error)
 }
 
 type PhotoServiceImpl struct {
@@ -44,20 +45,22 @@ func (s *PhotoServiceImpl) Create(PhotoInput web.CreaatePhotoRequest, userId uin
 func (s *PhotoServiceImpl) GetAllPhotos() ([]web.CreatePhotoResponse, error) {
 	photos, err := s.PhotoRepository.FindAll()
 
-	var photoResp []web.CreatePhotoResponse
+	photoResp := []web.CreatePhotoResponse{}
 	for i := 0; i < len(photos); i++ {
-		photoResp = []web.CreatePhotoResponse{
-			{
-				Id:        photos[i].ID,
-				Title:     photos[i].Title,
-				Caption:   photos[i].Caption,
-				PhotoUrl:  photos[i].PhotoUrl,
-				UserID:    photos[i].UserID,
-				CreatedAt: *photos[i].CreatedAt,
-			},
-		}
+		photo := convertBodyPhotoResponse(photos[i])
+		photoResp = append(photoResp, photo)
 	}
 
 	return photoResp, err
+}
 
+func (s *PhotoServiceImpl) GetPhotosByUser(userId uint) ([]web.CreatePhotoResponse, error) {
+	photos, err := s.PhotoRepository.FindPhotosByUser(userId)
+	photoResp := []web.CreatePhotoResponse{}
+	for i := 0; i < len(photos); i++ {
+		photo := convertBodyPhotoResponse(photos[i])
+		photoResp = append(photoResp, photo)
+	}
+
+	return photoResp, err
 }

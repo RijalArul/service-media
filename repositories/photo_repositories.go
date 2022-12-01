@@ -9,6 +9,7 @@ import (
 type PhotoRepository interface {
 	Create(photo models.Photo) (models.Photo, error)
 	FindAll() ([]models.Photo, error)
+	FindPhotosByUser(userId uint) ([]models.Photo, error)
 }
 
 type PhotoRepositoryImpl struct {
@@ -31,4 +32,12 @@ func (r *PhotoRepositoryImpl) FindAll() ([]models.Photo, error) {
 
 	return Photos, err
 
+}
+
+func (r *PhotoRepositoryImpl) FindPhotosByUser(userId uint) ([]models.Photo, error) {
+	Photos := []models.Photo{}
+
+	err := r.DB.Find(&Photos, "user_id = ?", userId).Error
+
+	return Photos, err
 }

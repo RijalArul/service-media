@@ -13,6 +13,7 @@ import (
 type PhotoHandler interface {
 	Create(ctx *gin.Context)
 	GetAllPhotos(ctx *gin.Context)
+	GetPhotosByUser(ctx *gin.Context)
 }
 
 type PhotoHandlerImpl struct {
@@ -69,4 +70,16 @@ func (h *PhotoHandlerImpl) GetAllPhotos(ctx *gin.Context) {
 		helpers.ConvertErrResponse(ctx, http.StatusInternalServerError, "Internal Server Error", err.Error())
 	}
 	convertBodyStatusResponse(ctx, http.StatusOK, "All Photos", photos)
+}
+
+func (h *PhotoHandlerImpl) GetPhotosByUser(ctx *gin.Context) {
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	userId := uint(userData["id"].(float64))
+	photos, err := h.PhotoService.GetPhotosByUser(userId)
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "Not Found Photos User", err.Error())
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusOK, "Success found photos user", photos)
 }
