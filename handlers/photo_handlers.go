@@ -12,6 +12,7 @@ import (
 
 type PhotoHandler interface {
 	Create(ctx *gin.Context)
+	GetAllPhotos(ctx *gin.Context)
 }
 
 type PhotoHandlerImpl struct {
@@ -28,6 +29,11 @@ func convertBodyStatusResponse(ctx *gin.Context, code int, message string, data 
 		ctx.JSON(code, gin.H{
 			"message": message,
 			"photo":   data,
+		})
+	case code == 200:
+		ctx.JSON(code, gin.H{
+			"message": message,
+			"photos":  data,
 		})
 	default:
 		ctx.JSON(code, message)
@@ -50,7 +56,17 @@ func (h *PhotoHandlerImpl) Create(ctx *gin.Context) {
 
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Failed created photo", err.Error())
+		return
 	}
 
 	convertBodyStatusResponse(ctx, http.StatusCreated, "Success Created Photo", newPhoto)
+}
+
+func (h *PhotoHandlerImpl) GetAllPhotos(ctx *gin.Context) {
+	photos, err := h.PhotoService.GetAllPhotos()
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusInternalServerError, "Internal Server Error", err.Error())
+	}
+	convertBodyStatusResponse(ctx, http.StatusOK, "All Photos", photos)
 }

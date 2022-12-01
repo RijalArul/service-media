@@ -33,7 +33,9 @@ func Routes() {
 	photoRouter := r.Group("/photos")
 
 	{
-		photoRouter.POST("/", middlewares.Authenthication(), photoHandler.Create)
+		photoRouter.Use(middlewares.Authenthication())
+		photoRouter.POST("/", photoHandler.Create)
+		photoRouter.GET("/", photoHandler.GetAllPhotos)
 	}
 
 	r.Run()
