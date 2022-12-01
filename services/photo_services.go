@@ -21,11 +21,12 @@ func NewPhotoService(photoRepository *repositories.PhotoRepository) PhotoService
 
 func convertBodyPhotoResponse(photo models.Photo) web.CreatePhotoResponse {
 	return web.CreatePhotoResponse{
-		Id:       photo.ID,
-		Title:    photo.Title,
-		Caption:  photo.Caption,
-		PhotoUrl: photo.PhotoUrl,
-		UserID:   photo.UserID,
+		Id:        photo.ID,
+		Title:     photo.Title,
+		Caption:   photo.Caption,
+		PhotoUrl:  photo.PhotoUrl,
+		UserID:    photo.UserID,
+		CreatedAt: *photo.CreatedAt,
 	}
 }
 
@@ -47,11 +48,12 @@ func (s *PhotoServiceImpl) GetAllPhotos() ([]web.CreatePhotoResponse, error) {
 	for i := 0; i < len(photos); i++ {
 		photoResp = []web.CreatePhotoResponse{
 			{
-				Id:       photos[i].ID,
-				Title:    photos[i].Title,
-				Caption:  photos[i].Caption,
-				PhotoUrl: photos[i].PhotoUrl,
-				UserID:   photos[i].UserID,
+				Id:        photos[i].ID,
+				Title:     photos[i].Title,
+				Caption:   photos[i].Caption,
+				PhotoUrl:  photos[i].PhotoUrl,
+				UserID:    photos[i].UserID,
+				CreatedAt: *photos[i].CreatedAt,
 			},
 		}
 	}
