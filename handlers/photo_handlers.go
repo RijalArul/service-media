@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"service-media/helpers"
 	"service-media/models/web"
@@ -48,17 +49,19 @@ func convertBodyStatusResponse(ctx *gin.Context, code int, message string, data 
 
 func (h *PhotoHandlerImpl) Create(ctx *gin.Context) {
 	var PhotoInput web.PhotoRequest
-	userData := ctx.MustGet("userData").(jwt.MapClaims)
 	contentType := helpers.GetContentType(ctx)
-	userID := uint(userData["id"].(float64))
 
 	if contentType == appJSON {
 		ctx.ShouldBindJSON(&PhotoInput)
 	} else {
 		ctx.ShouldBind(&PhotoInput)
 	}
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	userID := uint(userData["id"].(float64))
 
 	newPhoto, err := h.PhotoService.Create(PhotoInput, userID)
+
+	fmt.Println(newPhoto.User)
 
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Failed created photo", err.Error())

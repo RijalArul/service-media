@@ -11,6 +11,7 @@ type Photo struct {
 	Caption  string `gorm:"not null" valid:"required"`
 	PhotoUrl string `gorm:"not null" valid:"required~Url of your photo Product is required"`
 	UserID   uint
+	Comment  []Comment `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	User     *User
 }
 

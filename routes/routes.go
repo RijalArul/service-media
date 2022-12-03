@@ -28,7 +28,7 @@ func Routes() {
 	}
 
 	photoRepository := repositories.NewPhotoRepository(db)
-	photoService := services.NewPhotoService(&photoRepository)
+	photoService := services.NewPhotoService(photoRepository)
 	photoHandler := handlers.NewPhotoHandler(photoService)
 	photoRouter := r.Group("/photos")
 

@@ -18,10 +18,16 @@ type PhotoServiceImpl struct {
 	PhotoRepository repositories.PhotoRepository
 }
 
-func NewPhotoService(photoRepository *repositories.PhotoRepository) PhotoService {
-	return &PhotoServiceImpl{PhotoRepository: *photoRepository}
+func NewPhotoService(photoRepository repositories.PhotoRepository) PhotoService {
+	return &PhotoServiceImpl{PhotoRepository: photoRepository}
 }
 
+func convertBodyPhotoUser(user models.User) web.CreatePhotoUserResp {
+	return web.CreatePhotoUserResp{
+		Username: user.Username,
+		Email:    user.Email,
+	}
+}
 func convertBodyPhotoResponse(photo models.Photo) web.CreatePhotoResponse {
 	return web.CreatePhotoResponse{
 		Id:        photo.ID,
@@ -29,6 +35,7 @@ func convertBodyPhotoResponse(photo models.Photo) web.CreatePhotoResponse {
 		Caption:   photo.Caption,
 		PhotoUrl:  photo.PhotoUrl,
 		UserID:    photo.UserID,
+		User:      convertBodyPhotoUser(*photo.User),
 		CreatedAt: *photo.CreatedAt,
 	}
 }

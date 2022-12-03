@@ -4,6 +4,7 @@ import (
 	models "service-media/models/entity"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type PhotoRepository interface {
@@ -22,17 +23,14 @@ type PhotoRepositoryImpl struct {
 func NewPhotoRepository(db *gorm.DB) PhotoRepository {
 	return &PhotoRepositoryImpl{DB: db}
 }
-
 func (r *PhotoRepositoryImpl) Create(photo models.Photo) (models.Photo, error) {
-	err := r.DB.Create(&photo).Error
+	err := r.DB.Preload(clause.Associations).Create(&photo).First(&photo).Error
 	return photo, err
 }
-
 func (r *PhotoRepositoryImpl) FindAll() ([]models.Photo, error) {
 	Photos := []models.Photo{}
 
-	err := r.DB.Find(&Photos).Error
-
+	err := r.DB.Preload(clause.Associations).Find(&Photos).Error
 	return Photos, err
 
 }
