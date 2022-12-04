@@ -33,12 +33,12 @@ func convertBodyStatusResponse(ctx *gin.Context, code int, message string, data 
 	case code == 201:
 		ctx.JSON(code, gin.H{
 			"message": message,
-			"photo":   data,
+			"data":    data,
 		})
 	case code == 200:
 		ctx.JSON(code, gin.H{
 			"message": message,
-			"photos":  data,
+			"data":    data,
 		})
 	default:
 		ctx.JSON(code, gin.H{

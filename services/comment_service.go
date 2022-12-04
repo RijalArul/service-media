@@ -10,7 +10,7 @@ import (
 type CommentService interface {
 	Create(commentInput web.CommentRequest, userId uint, photoId uint) (web.CreateCommentResponse, error)
 	GetComments(userId uint) ([]web.CreateCommentResponse, error)
-	UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.CreateCommentResponse, error)
+	UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.UpdateCommentResponse, error)
 	DeleteComment(commentId uint) error
 }
 
@@ -34,6 +34,17 @@ func ConvertBodyCommentResp(comment models.Comment) web.CreateCommentResponse {
 	}
 }
 
+func ConvertBodyUpdateCommentResp(comment models.Comment) web.UpdateCommentResponse {
+	return web.UpdateCommentResponse{
+		Id:        comment.ID,
+		Message:   comment.Message,
+		UserID:    comment.UserID,
+		PhotoID:   comment.PhotoID,
+		User:      convertBodyPhotoUser(*comment.User),
+		Photo:     convertBodyAssociatePhoto(*comment.Photo),
+		UpdatedAt: *comment.UpdatedAt,
+	}
+}
 func (s *CommentServiceImpl) Create(commentInput web.CommentRequest, userId uint, photoId uint) (web.CreateCommentResponse, error) {
 	comment := models.Comment{
 		Message: commentInput.Message,
@@ -57,14 +68,14 @@ func (s *CommentServiceImpl) GetComments(userId uint) ([]web.CreateCommentRespon
 	return commentResp, err
 }
 
-func (s *CommentServiceImpl) UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.CreateCommentResponse, error) {
+func (s *CommentServiceImpl) UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.UpdateCommentResponse, error) {
 	comment := models.Comment{
 		Message: commentInput.Message,
 		UserID:  userId,
 	}
 
 	updateComment, err := s.CommentRepository.Update(comment, commentId)
-	return ConvertBodyCommentResp(updateComment), err
+	return ConvertBodyUpdateCommentResp(updateComment), err
 }
 
 func (s *CommentServiceImpl) DeleteComment(commentId uint) error {

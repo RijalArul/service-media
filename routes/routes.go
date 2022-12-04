@@ -54,5 +54,15 @@ func Routes() {
 		commentRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), commentHandler.DeleteComment)
 	}
 
+	socialMediaRepository := repositories.NewSocialMediaRepository(db)
+	socialMediaService := services.NewSocialMediaService(socialMediaRepository)
+	socialMediaHandler := handlers.NewSocialMediaHandler(socialMediaService)
+	socialMediaRouter := r.Group("/socialmedias")
+
+	{
+		socialMediaRouter.Use(middlewares.Authenthication())
+		socialMediaRouter.POST("/", socialMediaHandler.Create)
+		socialMediaRouter.GET("/", socialMediaHandler.MySocialMedia)
+	}
 	r.Run()
 }
