@@ -7,8 +7,9 @@ import (
 )
 
 type SocialMediaService interface {
-	Create(socmedInput web.SocialMediaRequest, userId uint) (web.SocialMediaResponse, error)
+	Create(socmedInput web.SocialMediaRequest, userId uint) (web.SocialMediaCreateResponse, error)
 	MySocialMedia(socmedia models.SocialMedia, userId uint) ([]web.SocialMediaResponse, error)
+	Update(socmedInput web.SocialMediaRequest, userId uint, socialMediaId uint) (web.SocialMediaUpdateResponse, error)
 }
 
 type SocialMediaServiceImpl struct {
@@ -19,8 +20,8 @@ func NewSocialMediaService(socmedRepo repositories.SocialMediaRepository) Social
 	return &SocialMediaServiceImpl{SocialMediaRepository: socmedRepo}
 }
 
-func ConvertBodySocialMediaResp(socialMedia models.SocialMedia) web.SocialMediaResponse {
-	return web.SocialMediaResponse{
+func ConvertBodyCreateSocialMediaResp(socialMedia models.SocialMedia) web.SocialMediaCreateResponse {
+	return web.SocialMediaCreateResponse{
 		Id:             socialMedia.ID,
 		Name:           socialMedia.Name,
 		SocialMediaUrl: socialMedia.SocialMediaUrl,
@@ -29,7 +30,27 @@ func ConvertBodySocialMediaResp(socialMedia models.SocialMedia) web.SocialMediaR
 	}
 }
 
-func (s *SocialMediaServiceImpl) Create(socmedInput web.SocialMediaRequest, userId uint) (web.SocialMediaResponse, error) {
+func ConvertBodySocialMediaResp(socialMedia models.SocialMedia) web.SocialMediaResponse {
+	return web.SocialMediaResponse{
+		Id:             socialMedia.ID,
+		Name:           socialMedia.Name,
+		SocialMediaUrl: socialMedia.SocialMediaUrl,
+		UserID:         socialMedia.UserID,
+		User:           convertBodyPhotoUser(*socialMedia.User),
+	}
+}
+
+func ConvertBodyUpdateSocialMediaResp(socialMedia models.SocialMedia) web.SocialMediaUpdateResponse {
+	return web.SocialMediaUpdateResponse{
+		Id:             socialMedia.ID,
+		Name:           socialMedia.Name,
+		SocialMediaUrl: socialMedia.SocialMediaUrl,
+		UserID:         socialMedia.UserID,
+		UpdatedAt:      *socialMedia.UpdatedAt,
+	}
+}
+
+func (s *SocialMediaServiceImpl) Create(socmedInput web.SocialMediaRequest, userId uint) (web.SocialMediaCreateResponse, error) {
 	socmed := models.SocialMedia{
 		Name:           socmedInput.Name,
 		SocialMediaUrl: socmedInput.SocialMediaUrl,
@@ -37,7 +58,7 @@ func (s *SocialMediaServiceImpl) Create(socmedInput web.SocialMediaRequest, user
 	}
 
 	newSocmed, err := s.SocialMediaRepository.Create(socmed)
-	return ConvertBodySocialMediaResp(newSocmed), err
+	return ConvertBodyCreateSocialMediaResp(newSocmed), err
 }
 
 func (s *SocialMediaServiceImpl) MySocialMedia(socmed models.SocialMedia, userId uint) ([]web.SocialMediaResponse, error) {
@@ -52,4 +73,15 @@ func (s *SocialMediaServiceImpl) MySocialMedia(socmed models.SocialMedia, userId
 
 	return socmedResp, err
 
+}
+
+func (s *SocialMediaServiceImpl) Update(socmedInput web.SocialMediaRequest, userId uint, socialMediaId uint) (web.SocialMediaUpdateResponse, error) {
+	socialMedia := models.SocialMedia{
+		Name:           socmedInput.Name,
+		SocialMediaUrl: socmedInput.SocialMediaUrl,
+		UserID:         userId,
+	}
+	updateSocmed, err := s.SocialMediaRepository.Update(socialMedia, socialMediaId)
+
+	return ConvertBodyUpdateSocialMediaResp(updateSocmed), err
 }

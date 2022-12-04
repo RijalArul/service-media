@@ -63,6 +63,7 @@ func Routes() {
 		socialMediaRouter.Use(middlewares.Authenthication())
 		socialMediaRouter.POST("/", socialMediaHandler.Create)
 		socialMediaRouter.GET("/", socialMediaHandler.MySocialMedia)
+		socialMediaRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaHandler.Update)
 	}
 	r.Run()
 }

@@ -6,6 +6,7 @@ import (
 	models "service-media/models/entity"
 	"service-media/models/web"
 	"service-media/services"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 type SocialMediaHandler interface {
 	Create(ctx *gin.Context)
 	MySocialMedia(ctx *gin.Context)
+	Update(ctx *gin.Context)
 }
 
 type SocialMediaHandlerImpl struct {
@@ -56,7 +58,34 @@ func (h *SocialMediaHandlerImpl) MySocialMedia(ctx *gin.Context) {
 
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "Failed Social Media Not Found", err.Error())
+		return
 	}
 
 	convertBodyStatusResponse(ctx, http.StatusOK, "Success Social Media is Found", getSocmed)
+}
+
+func (h *SocialMediaHandlerImpl) Update(ctx *gin.Context) {
+	var socmedInput web.SocialMediaRequest
+	contentType := helpers.GetContentType(ctx)
+
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&socmedInput)
+	} else {
+		ctx.ShouldBind(&socmedInput)
+	}
+
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	userId := uint(userData["id"].(float64))
+	socialMediaId := ctx.Param("socialMediaId")
+	socialMediaParse, _ := strconv.ParseUint(socialMediaId, 10, 32)
+
+	updateUser, err := h.SocmedServices.Update(socmedInput, userId, uint(socialMediaParse))
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Failed Update Social Media", err.Error())
+		return
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusOK, "Success Updated Social Media", updateUser)
+
 }
