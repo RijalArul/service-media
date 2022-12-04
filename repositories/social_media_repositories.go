@@ -11,6 +11,7 @@ type SocialMediaRepository interface {
 	Create(socialMedia models.SocialMedia) (models.SocialMedia, error)
 	GetSocialMedia(socialMedia models.SocialMedia) ([]models.SocialMedia, error)
 	Update(socialMedia models.SocialMedia, socialMediaId uint) (models.SocialMedia, error)
+	Delete(socialMediaId uint) error
 }
 
 type SocialMediaRepositoryImpl struct {
@@ -35,4 +36,10 @@ func (r *SocialMediaRepositoryImpl) GetSocialMedia(socialMedia models.SocialMedi
 func (r *SocialMediaRepositoryImpl) Update(socialMedia models.SocialMedia, socialMediaId uint) (models.SocialMedia, error) {
 	err := r.DB.Preload(clause.Associations).Where("id = ?", socialMediaId).Updates(socialMedia).First(&socialMedia).Error
 	return socialMedia, err
+}
+
+func (r *SocialMediaRepositoryImpl) Delete(socialMediaId uint) error {
+	var socialmedia models.SocialMedia
+	err := r.DB.Delete(&socialmedia, socialMediaId).Error
+	return err
 }

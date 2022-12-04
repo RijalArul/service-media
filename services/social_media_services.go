@@ -10,6 +10,7 @@ type SocialMediaService interface {
 	Create(socmedInput web.SocialMediaRequest, userId uint) (web.SocialMediaCreateResponse, error)
 	MySocialMedia(socmedia models.SocialMedia, userId uint) ([]web.SocialMediaResponse, error)
 	Update(socmedInput web.SocialMediaRequest, userId uint, socialMediaId uint) (web.SocialMediaUpdateResponse, error)
+	Delete(socialMediaId uint) error
 }
 
 type SocialMediaServiceImpl struct {
@@ -84,4 +85,9 @@ func (s *SocialMediaServiceImpl) Update(socmedInput web.SocialMediaRequest, user
 	updateSocmed, err := s.SocialMediaRepository.Update(socialMedia, socialMediaId)
 
 	return ConvertBodyUpdateSocialMediaResp(updateSocmed), err
+}
+
+func (s *SocialMediaServiceImpl) Delete(socialMediaId uint) error {
+	err := s.SocialMediaRepository.Delete(socialMediaId)
+	return err
 }

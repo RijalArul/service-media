@@ -16,6 +16,7 @@ type SocialMediaHandler interface {
 	Create(ctx *gin.Context)
 	MySocialMedia(ctx *gin.Context)
 	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type SocialMediaHandlerImpl struct {
@@ -88,4 +89,17 @@ func (h *SocialMediaHandlerImpl) Update(ctx *gin.Context) {
 
 	convertBodyStatusResponse(ctx, http.StatusOK, "Success Updated Social Media", updateUser)
 
+}
+
+func (h *SocialMediaHandlerImpl) Delete(ctx *gin.Context) {
+	socialMediaId := ctx.Param("socialMediaId")
+	socialMediaParse, _ := strconv.ParseUint(socialMediaId, 10, 32)
+
+	err := h.SocmedServices.Delete(uint(socialMediaParse))
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "Social Media Not Found", err.Error())
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusAccepted, "Deleted Success Social Media", "Deleted Success Social Media")
 }

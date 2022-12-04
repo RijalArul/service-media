@@ -64,6 +64,7 @@ func Routes() {
 		socialMediaRouter.POST("/", socialMediaHandler.Create)
 		socialMediaRouter.GET("/", socialMediaHandler.MySocialMedia)
 		socialMediaRouter.PUT("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaHandler.Update)
+		socialMediaRouter.DELETE("/:socialMediaId", middlewares.SocialMediaAuthorization(), socialMediaHandler.Delete)
 	}
 	r.Run()
 }
