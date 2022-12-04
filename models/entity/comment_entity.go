@@ -6,6 +6,7 @@ import (
 )
 
 type Comment struct {
+	GormModel
 	Message string `gorm:"not null" valid:"required"`
 	UserID  uint
 	PhotoID uint

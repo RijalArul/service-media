@@ -41,5 +41,16 @@ func Routes() {
 		photoRouter.DELETE("/:photoId", middlewares.PhotoAuthorization(), photoHandler.DeletePhoto)
 	}
 
+	commentRepository := repositories.NewCommentRepository(db)
+	commentService := services.NewCommentService(commentRepository)
+	commentHandler := handlers.NewCommentHandler(commentService)
+	commentRouter := r.Group("/comments")
+
+	{
+		commentRouter.Use(middlewares.Authenthication())
+		commentRouter.POST("/:photoId", commentHandler.Create)
+		commentRouter.GET("/", commentHandler.GetComments)
+	}
+
 	r.Run()
 }

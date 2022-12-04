@@ -22,12 +22,6 @@ func NewPhotoService(photoRepository repositories.PhotoRepository) PhotoService 
 	return &PhotoServiceImpl{PhotoRepository: photoRepository}
 }
 
-func convertBodyPhotoUser(user models.User) web.CreatePhotoUserResp {
-	return web.CreatePhotoUserResp{
-		Username: user.Username,
-		Email:    user.Email,
-	}
-}
 func convertBodyPhotoResponse(photo models.Photo) web.CreatePhotoResponse {
 	return web.CreatePhotoResponse{
 		Id:        photo.ID,
@@ -42,6 +36,16 @@ func convertBodyPhotoResponse(photo models.Photo) web.CreatePhotoResponse {
 
 func convertBodyUpdatePhotoResponse(photo models.Photo) web.UpdatePhotoResponse {
 	return web.UpdatePhotoResponse{
+		Id:       photo.ID,
+		Title:    photo.Title,
+		Caption:  photo.Caption,
+		PhotoUrl: photo.PhotoUrl,
+		UserID:   photo.UserID,
+	}
+}
+
+func convertBodyAssociatePhoto(photo models.Photo) web.CreatePhotoAssociateResp {
+	return web.CreatePhotoAssociateResp{
 		Id:       photo.ID,
 		Title:    photo.Title,
 		Caption:  photo.Caption,

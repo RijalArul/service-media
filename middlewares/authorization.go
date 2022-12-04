@@ -34,5 +34,29 @@ func PhotoAuthorization() gin.HandlerFunc {
 
 		ctx.Next()
 	}
+}
 
+func CommentAuthorization() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		db := databases.GetDB()
+		comment := models.Comment{}
+		commentId := ctx.Param("commentId")
+		commentParse, _ := strconv.ParseUint(commentId, 10, 32)
+		err := db.Model(&comment).First(&comment, commentParse).Error
+
+		if err != nil {
+			helpers.ConvertErrResponse(ctx, http.StatusNotFound, "Comment Not Found", err.Error())
+			return
+		}
+
+		userData := ctx.MustGet("userData").(jwt.MapClaims)
+		userID := uint(userData["id"].(float64))
+
+		if comment.UserID != userID {
+			helpers.ConvertErrResponse(ctx, http.StatusUnauthorized, "Unauthorized", "Unauthorized")
+			return
+		}
+
+		ctx.Next()
+	}
 }

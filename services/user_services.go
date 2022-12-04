@@ -35,6 +35,13 @@ func convertUserBodyResponse(user models.User) web.CreateUserResponse {
 	}
 }
 
+func convertBodyPhotoUser(user models.User) web.CreatePhotoUserResp {
+	return web.CreatePhotoUserResp{
+		Username: user.Username,
+		Email:    user.Email,
+	}
+}
+
 func (s *UserServiceImpl) Create(UserInput web.CreateUserRequest) (web.CreateUserResponse, error) {
 	user := models.User{
 		Username: UserInput.Username,
