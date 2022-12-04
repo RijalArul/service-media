@@ -15,6 +15,7 @@ type CommentHandler interface {
 	Create(ctx *gin.Context)
 	GetComments(ctx *gin.Context)
 	UpdateComment(ctx *gin.Context)
+	DeleteComment(ctx *gin.Context)
 }
 
 type CommentHandlerImpl struct {
@@ -82,8 +83,23 @@ func (h *CommentHandlerImpl) UpdateComment(ctx *gin.Context) {
 
 	if err != nil {
 		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Update Failed Comment", err.Error())
+		return
 	}
 
 	convertBodyStatusResponse(ctx, http.StatusOK, "Updated success comment", updateComment)
 
+}
+
+func (h *CommentHandlerImpl) DeleteComment(ctx *gin.Context) {
+	commentId := ctx.Param("commentId")
+	parseCommentID, _ := strconv.ParseUint(commentId, 10, 32)
+
+	err := h.CommentService.DeleteComment(uint(parseCommentID))
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusNotFound, "Comment Not Found", commentId)
+		return
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusAccepted, "Delete Success Comment", "Successs Delete Comment")
 }

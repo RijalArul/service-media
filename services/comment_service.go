@@ -11,6 +11,7 @@ type CommentService interface {
 	Create(commentInput web.CommentRequest, userId uint, photoId uint) (web.CreateCommentResponse, error)
 	GetComments(userId uint) ([]web.CreateCommentResponse, error)
 	UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.CreateCommentResponse, error)
+	DeleteComment(commentId uint) error
 }
 
 type CommentServiceImpl struct {
@@ -64,4 +65,9 @@ func (s *CommentServiceImpl) UpdateComment(commentInput web.CommentRequest, user
 
 	updateComment, err := s.CommentRepository.Update(comment, commentId)
 	return ConvertBodyCommentResp(updateComment), err
+}
+
+func (s *CommentServiceImpl) DeleteComment(commentId uint) error {
+	err := s.CommentRepository.Delete(commentId)
+	return err
 }

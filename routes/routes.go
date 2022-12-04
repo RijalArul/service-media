@@ -51,6 +51,7 @@ func Routes() {
 		commentRouter.POST("/:photoId", commentHandler.Create)
 		commentRouter.GET("/", commentHandler.GetComments)
 		commentRouter.PUT("/:commentId", middlewares.CommentAuthorization(), commentHandler.UpdateComment)
+		commentRouter.DELETE("/:commentId", middlewares.CommentAuthorization(), commentHandler.DeleteComment)
 	}
 
 	r.Run()
