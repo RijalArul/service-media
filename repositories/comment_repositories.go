@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	models "service-media/models/entity"
 
 	"gorm.io/gorm"
@@ -11,7 +10,7 @@ import (
 type CommentRepository interface {
 	Create(comment models.Comment) (models.Comment, error)
 	GetCommentsUser(userId uint) ([]models.Comment, error)
-	GetCommentUser(userId uint) (models.Comment, error)
+	Update(comment models.Comment, commentId uint) (models.Comment, error)
 }
 
 type CommentRepositoryImpl struct {
@@ -31,12 +30,10 @@ func (r *CommentRepositoryImpl) GetCommentsUser(userId uint) ([]models.Comment, 
 	comments := []models.Comment{}
 	err := r.DB.Preload(clause.Associations).Find(&comments, "user_id = ?", userId).Error
 
-	fmt.Println(err, ">>>>>>>>>>>>>>>")
 	return comments, err
 }
 
-func (r *CommentRepositoryImpl) GetCommentUser(userId uint) (models.Comment, error) {
-	comment := models.Comment{}
-	err := r.DB.Preload(clause.Associations).First(&comment, "user_id = ?", userId).Error
+func (r *CommentRepositoryImpl) Update(comment models.Comment, commentId uint) (models.Comment, error) {
+	err := r.DB.Preload(clause.Associations).Where("id = ?", commentId).Updates(&comment).First(&comment).Error
 	return comment, err
 }

@@ -50,6 +50,7 @@ func Routes() {
 		commentRouter.Use(middlewares.Authenthication())
 		commentRouter.POST("/:photoId", commentHandler.Create)
 		commentRouter.GET("/", commentHandler.GetComments)
+		commentRouter.PUT("/:commentId", middlewares.CommentAuthorization(), commentHandler.UpdateComment)
 	}
 
 	r.Run()

@@ -14,6 +14,7 @@ import (
 type CommentHandler interface {
 	Create(ctx *gin.Context)
 	GetComments(ctx *gin.Context)
+	UpdateComment(ctx *gin.Context)
 }
 
 type CommentHandlerImpl struct {
@@ -60,4 +61,29 @@ func (h *CommentHandlerImpl) GetComments(ctx *gin.Context) {
 	}
 
 	convertBodyStatusResponse(ctx, http.StatusOK, "Success Get Comments", getComments)
+}
+
+func (h *CommentHandlerImpl) UpdateComment(ctx *gin.Context) {
+	var comment web.CommentRequest
+	contentType := helpers.GetContentType(ctx)
+
+	if contentType == appJSON {
+		ctx.ShouldBindJSON(&comment)
+	} else {
+		ctx.ShouldBind(&comment)
+	}
+
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	userID := uint(userData["id"].(float64))
+	commentId := ctx.Param("commentId")
+	parseCommentID, _ := strconv.ParseUint(commentId, 10, 32)
+
+	updateComment, err := h.CommentService.UpdateComment(comment, userID, uint(parseCommentID))
+
+	if err != nil {
+		helpers.ConvertErrResponse(ctx, http.StatusBadRequest, "Update Failed Comment", err.Error())
+	}
+
+	convertBodyStatusResponse(ctx, http.StatusOK, "Updated success comment", updateComment)
+
 }

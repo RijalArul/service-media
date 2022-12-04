@@ -10,6 +10,7 @@ import (
 type CommentService interface {
 	Create(commentInput web.CommentRequest, userId uint, photoId uint) (web.CreateCommentResponse, error)
 	GetComments(userId uint) ([]web.CreateCommentResponse, error)
+	UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.CreateCommentResponse, error)
 }
 
 type CommentServiceImpl struct {
@@ -53,4 +54,14 @@ func (s *CommentServiceImpl) GetComments(userId uint) ([]web.CreateCommentRespon
 	}
 
 	return commentResp, err
+}
+
+func (s *CommentServiceImpl) UpdateComment(commentInput web.CommentRequest, userId uint, commentId uint) (web.CreateCommentResponse, error) {
+	comment := models.Comment{
+		Message: commentInput.Message,
+		UserID:  userId,
+	}
+
+	updateComment, err := s.CommentRepository.Update(comment, commentId)
+	return ConvertBodyCommentResp(updateComment), err
 }
